@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../theme/app_theme.dart';
-import 'welcome_screen.dart';
+import 'auth_gate.dart';
 
 /// Splash screen with animated logo and tagline
-/// Displays for 3 seconds before transitioning to Welcome screen
+/// Displays for 3 seconds before transitioning to AuthGate
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -46,13 +46,13 @@ class _SplashScreenState extends State<SplashScreen>
     // Start animation
     _animationController.forward();
 
-    // Navigate to Welcome screen after 3 seconds
+    // Navigate to auth gate after splash completes.
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-                const WelcomeScreen(),
+                const AuthGate(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);

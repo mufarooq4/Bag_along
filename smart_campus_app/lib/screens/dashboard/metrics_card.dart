@@ -14,6 +14,7 @@ class MetricsCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final bool showSparkline;
+  final bool showAccentLines;
   final double? severity;
   final double width;
 
@@ -26,6 +27,7 @@ class MetricsCard extends StatelessWidget {
     required this.icon,
     required this.color,
     this.showSparkline = false,
+    this.showAccentLines = false,
     this.severity,
     this.width = 168,
   });
@@ -99,6 +101,10 @@ class MetricsCard extends StatelessWidget {
                   color: AppTheme.textSecondary,
                 ),
               ),
+              if (showAccentLines) ...[
+                const SizedBox(height: 8),
+                _buildAccentLines(),
+              ],
               if (subtitle != null)
                 Text(
                   subtitle!,
@@ -146,6 +152,37 @@ class MetricsCard extends StatelessWidget {
         painter: _SparklinePainter(color: color),
         size: const Size.fromHeight(20),
       ),
+    );
+  }
+
+  Widget _buildAccentLines() {
+    return Column(
+      children: [
+        Container(
+          height: 2,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                color.withOpacity(0.75),
+                color.withOpacity(0.12),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(999),
+          ),
+        ),
+        const SizedBox(height: 3),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 36,
+            height: 2,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.45),
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

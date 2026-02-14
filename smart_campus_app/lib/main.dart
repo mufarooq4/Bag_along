@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/auth_gate.dart';
+import 'screens/splash_screen.dart';
 import 'providers/onboarding_provider.dart';
 import 'theme/app_theme.dart';
 
@@ -28,7 +28,7 @@ class SmartCampusApp extends StatelessWidget {
         title: 'Smart Campus',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
-        home: const AuthGate(),
+        home: const SplashScreen(),
       ),
     );
   }

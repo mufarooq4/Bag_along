@@ -561,8 +561,48 @@ async function runMultiAgentSystem() {
     if (!ACTIVE_USER_ID) {
       await resolveActiveUserId();
     }
-    const { profile, currentData } = await fetchUserContext(ACTIVE_USER_ID);
-    await pushAutonomousInsights(profile, currentData, ACTIVE_USER_ID);
+
+    // Run autonomous recommendations for all recently active users instead of
+    // a single configured user. This avoids app/simulator user-id mismatch.
+    const targetUsers = new Set([ACTIVE_USER_ID]);
+
+    const { data: sensorUsers, error: sensorUsersErr } = await supabase
+      .from('sensor_readings')
+      .select('user_id, recorded_at')
+      .order('recorded_at', { ascending: false })
+      .limit(20);
+    if (sensorUsersErr) {
+      console.warn('⚠️ Could not fetch recent sensor users:', sensorUsersErr.message);
+    } else {
+      for (const row of sensorUsers || []) {
+        if (row.user_id) targetUsers.add(row.user_id);
+      }
+    }
+
+    const { data: queryUsers, error: queryUsersErr } = await supabase
+      .from('agent_queries')
+      .select('user_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (queryUsersErr) {
+      console.warn('⚠️ Could not fetch recent query users:', queryUsersErr.message);
+    } else {
+      for (const row of queryUsers || []) {
+        if (row.user_id) targetUsers.add(row.user_id);
+      }
+    }
+
+    for (const userId of targetUsers) {
+      try {
+        const { profile, currentData } = await fetchUserContext(userId);
+        await pushAutonomousInsights(profile, currentData, userId);
+      } catch (userError) {
+        console.warn(
+          `⚠️ Skipping autonomous insight generation for user ${userId}:`,
+          userError?.message || userError,
+        );
+      }
+    }
   } catch (error) {
     console.error('❌ Orchestrator Error:', error);
   }
